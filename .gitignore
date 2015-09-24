@@ -5,3 +5,7 @@ test
 tfdisk.img
 *.dll
 apidoc
+.idea
+*.iml
+out
+
