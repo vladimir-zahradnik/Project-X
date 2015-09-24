@@ -30,13 +30,7 @@
 
 package net.sourceforge.dvb.projectx.common;
 
-import java.io.BufferedReader;
-import	java.io.ByteArrayOutputStream;
-import java.io.InputStreamReader;
-import java.io.FileReader;
-import java.io.FileWriter;
-import java.io.IOException;
-import java.io.PrintWriter;
+import java.io.*;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -75,7 +69,7 @@ public class Settings extends Object {
 	 */
 	public Settings()
 	{
-		this(Resource.workdir + Resource.filesep + DEFAULT_INI);
+		this(Resource.workDir + File.separator + DEFAULT_INI);
 	}
 
 	/**

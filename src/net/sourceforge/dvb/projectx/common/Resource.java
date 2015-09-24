@@ -26,8 +26,6 @@
 
 package net.sourceforge.dvb.projectx.common;
 
-//import java.awt.event.ActionEvent;
-//import java.awt.event.ActionListener;
 import java.io.File;
 import java.io.FileInputStream;
 import java.net.JarURLConnection;
@@ -50,32 +48,33 @@ import java.util.jar.JarFile;
 import java.awt.Image;
 import java.awt.Toolkit;
 
-import net.sourceforge.dvb.projectx.common.Keys;
-
 
 /**
  * Project-X resource and localization handling.
  * 
  * @author Peter Storch
  */
-public class Resource extends Object {
+public class Resource {
 	
-	/** the prefix of all pjx resource files */
+	// the prefix of all pjx resource files
 	private static final String PJX_RESOURCE_PREFIX = "pjxresources";
 
-	/** current working directory */
-	public static final String workdir = System.getProperty("user.dir");
-	
-	/** os dependent file separator */
-	public static final String filesep = System.getProperty("file.separator");
+    // name of the resource directory
+    private static final String PJX_RESOURCE_DIR_NAME = "res";
 
-	/** the users locale */
+	// current working directory
+	public static final String workDir = System.getProperty("user.dir");
+
+    // resource directory
+    public static final String resDir = workDir + File.separator + PJX_RESOURCE_DIR_NAME;
+
+	// the users locale
 	private static Locale locale = null;
 
-	/** the default resource bundle */
+	// the default resource bundle
 	private static ResourceBundle defaultResource = null;
 
-	/** the resource bundle for the current users locale or language setting */
+	// the resource bundle for the current users locale or language setting
 	private static ResourceBundle resource = null;
 
 	/**
@@ -92,7 +91,7 @@ public class Resource extends Object {
 		// first we try to find one in the current working directory
 		try 
 		{
-			File file = new File(workdir + filesep + resourceName);
+			File file = new File(resDir + File.separator + resourceName);
 			if (file.exists() && file.canRead())
 			{
 				newBundle = new PropertyResourceBundle(new FileInputStream(file));
@@ -141,7 +140,7 @@ public class Resource extends Object {
 	/**
 	 * Loads Language from ini file.
 	 * 
-	 * @param filename Name of the inifile.
+	 * @param lang Name of the language file to use.
 	 */
 	public static void loadLang(String lang)
 	{
@@ -257,7 +256,7 @@ public class Resource extends Object {
 	 */
 	public static String getString(String key, Object arg)
 	{
-		return MessageFormat.format(getString(key), new Object[]{arg});
+		return MessageFormat.format(getString(key), arg);
 	}
 
 	/**
@@ -270,7 +269,7 @@ public class Resource extends Object {
 	 */
 	public static String getString(String key, Object arg1, Object arg2)
 	{
-		return MessageFormat.format(getString(key), new Object[]{arg1, arg2});
+		return MessageFormat.format(getString(key), arg1, arg2);
 	}
 
 	/**
@@ -284,7 +283,7 @@ public class Resource extends Object {
 	 */
 	public static String getString(String key, Object arg1, Object arg2, Object arg3)
 	{
-		return MessageFormat.format(getString(key), new Object[]{arg1, arg2, arg3});
+		return MessageFormat.format(getString(key), arg1, arg2, arg3);
 	}
 
 	/**
@@ -299,7 +298,7 @@ public class Resource extends Object {
 	 */
 	public static String getString(String key, Object arg1, Object arg2, Object arg3, Object arg4)
 	{
-		return MessageFormat.format(getString(key), new Object[]{arg1, arg2, arg3, arg4});
+		return MessageFormat.format(getString(key), arg1, arg2, arg3, arg4);
 	}
 
 	/**
@@ -315,7 +314,7 @@ public class Resource extends Object {
 	 */
 	public static String getString(String key, Object arg1, Object arg2, Object arg3, Object arg4, Object arg5)
 	{
-		return MessageFormat.format(getString(key), new Object[]{arg1, arg2, arg3, arg4, arg5});
+		return MessageFormat.format(getString(key), arg1, arg2, arg3, arg4, arg5);
 	}
 
 	
@@ -330,7 +329,7 @@ public class Resource extends Object {
 
 		try {
 			// we know we have an english resource, so first find this one to find the location
-			URL url = ClassLoader.getSystemResource(PJX_RESOURCE_PREFIX + "_en.properties");
+			URL url = ClassLoader.getSystemResource(PJX_RESOURCE_DIR_NAME + File.separator + PJX_RESOURCE_PREFIX + "_en.properties");
 			if (url != null) {
 				URLConnection urlc = null;
 				urlc = url.openConnection();
@@ -353,11 +352,11 @@ public class Resource extends Object {
 						+ "\"*.properties");
 			}
 			
-			// also look into the current working directory for additional resource files
-			File workDirFile = new File(workdir);
-			addAvailableLocalesFromFileSystem(locales, workDirFile);
+			// also look into the current resouce directory for additional resource files
+			File resourceDir = new File(resDir);
+			addAvailableLocalesFromFileSystem(locales, resourceDir);
 		} catch (Exception e) {
-			System.out.println(e);
+            e.printStackTrace();
 		}
 		
 		return (Locale[])locales.toArray(new Locale[0]);
@@ -390,7 +389,7 @@ public class Resource extends Object {
 						Locale locale = new Locale(code, "");
 						locales.add(locale);
 					} catch (Exception e) {
-						System.out.println(e);
+						e.printStackTrace();
 					}
 				}
 			}
@@ -408,7 +407,7 @@ public class Resource extends Object {
 		try {
 			jarf = jurlc.getJarFile();
 		} catch (Exception e) {
-			System.out.println(e);
+			e.printStackTrace();
 		}
 		if (jarf != null) {
 			for (Enumeration en = jarf.entries(); en.hasMoreElements();) {
@@ -443,11 +442,11 @@ public class Resource extends Object {
 	{
 		try
 		{
-			String filename = workdir + filesep + resource;
+			String filename = resDir + File.separator + resource;
 			File file = new File(filename);
 			if (file.exists() && file.canRead())
 			{
-				return file.toURL();
+				return file.toURI().toURL();
 			}
 		}
 		catch(Exception e)
@@ -481,7 +480,7 @@ public class Resource extends Object {
 			usedLocale = Locale.getDefault();
 		}
 
-		String localizedResource = path + filesep + usedLocale.getLanguage() + filesep + resourceName;
+		String localizedResource = path + File.separator + usedLocale.getLanguage() + File.separator + resourceName;
 		
 		URL url = getResourceURL(localizedResource);
 		if (url != null)
@@ -490,7 +489,7 @@ public class Resource extends Object {
 		}
 
 		// there is no localized version of this file, try the default version
-		return getResourceURL(path + filesep + resourceName);
+		return getResourceURL(path + File.separator + resourceName);
 	}
 
 	/**

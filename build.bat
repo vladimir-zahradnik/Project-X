@@ -30,10 +30,6 @@ echo compiling ProjectX with JAVA_HOME=%JAVA_HOME%
 "%JAVA_HOME%\bin\javac.exe" -O -classpath lib\commons-net-1.3.0.jar -d build @sources.lst
 if errorlevel 1 goto ERROR
 
-echo copying resources
-copy resources\*.* build
-if errorlevel 1 goto ERROR
-
 echo building ProjectX.jar file
 "%JAVA_HOME%\bin\jar.exe" cfvm ProjectX.jar MANIFEST.MF -C build .
 if errorlevel 1 goto ERROR

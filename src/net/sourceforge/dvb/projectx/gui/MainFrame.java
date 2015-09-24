@@ -1012,7 +1012,7 @@ public class MainFrame extends JPanel {
 			{
 				StripRelook stripRelook = new StripRelook(type);
 
-				Common.setOSDMessage("strip Relook® data, type " + type + "...");
+				Common.setOSDMessage("strip Relookï¿½ data, type " + type + "...");
 
 				XInputFile[] xif = stripRelook.process(xInputFile, collection.getOutputDirectory());
 
@@ -1052,7 +1052,7 @@ public class MainFrame extends JPanel {
 			{
 				StripMedion stripMedion = new StripMedion();
 
-				Common.setOSDMessage("strip Medion® data...");
+				Common.setOSDMessage("strip Medionï¿½ data...");
 
 				XInputFile[] xif = stripMedion.process(xInputFile, collection.getOutputDirectory());
 
@@ -1532,6 +1532,7 @@ public class MainFrame extends JPanel {
 			{
 				String action = event.getActionCommand();
 
+				//TODO: Resource is no longer valid, consider removing this from code
 				if (action.equals("check"))
 				{
 					new Html("http://project-x.sourceforge.net/optional/resources/").show();
