@@ -32,7 +32,7 @@ SET INCLUDE=%WATCOM%\H;%WATCOM%\H\OS2
 SET BEGINLIBPATH=%WATCOM%\BINP\DLL
 
 rem create header
-%JAVA_HOME%\bin\javah -classpath ..\..\build net.sourceforge.dvb.projectx.video.IDCTSseNative
+%JAVA_HOME%\bin\javah -classpath ..\..\build IDCTSseNative
 
 rem compile
 wcc386 -bd -6s -oh -i%JAVA_HOME%\include;%JAVA_HOME%\include\os2 net_sourceforge_dvb_projectx_video_IDCTSseNative.c

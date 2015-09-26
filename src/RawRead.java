@@ -34,7 +34,7 @@
 import java.util.ArrayList;
 
 //import net.sourceforge.dvb.projectx.xinput.topfield_raw.*;;
-import net.sourceforge.dvb.projectx.xinput.topfield_raw.RawReadIF;
+import sk.vzahradn.dvb.projectx.xinput.topfield_raw.RawReadIF;
 
 public class RawRead implements RawReadIF 
 {
