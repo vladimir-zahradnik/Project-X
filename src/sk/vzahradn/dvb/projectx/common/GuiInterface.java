@@ -52,7 +52,7 @@ public class GuiInterface implements GuiInterfaceIF {
 		try {
 			if (loadGUI)
 			{
-				impl = (GuiInterfaceIF) Class.forName("GuiInterfaceImpl").newInstance();
+				impl = (GuiInterfaceIF) Class.forName("sk.vzahradn.dvb.projectx.gui.GuiInterfaceImpl").newInstance();
 				accessible = true;
 			}
 
