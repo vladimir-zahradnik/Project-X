@@ -31,6 +31,7 @@ import java.io.FileInputStream;
 import java.net.JarURLConnection;
 import java.net.URL;
 import java.net.URLConnection;
+import java.text.DateFormat;
 import java.text.MessageFormat;
 import java.util.ArrayList;
 import java.util.Enumeration;
@@ -47,6 +48,8 @@ import java.util.jar.JarFile;
 
 import java.awt.Image;
 import java.awt.Toolkit;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 
 /**
@@ -55,9 +58,8 @@ import java.awt.Toolkit;
  * @author Peter Storch
  */
 public class Resource {
-	
 	// the prefix of all pjx resource files
-	private static final String PJX_RESOURCE_PREFIX = "pjxresources";
+	private static final String PJX_LANG_RESOURCE_NAME = "sk.vzahradn.dvb.projectx.i18n.pjxresources";
 
     // name of the resource directory
     private static final String PJX_RESOURCE_DIR_NAME = "res";
@@ -71,64 +73,9 @@ public class Resource {
 	// the users locale
 	private static Locale locale = null;
 
-	// the default resource bundle
-	private static ResourceBundle defaultResource = null;
-
 	// the resource bundle for the current users locale or language setting
 	private static ResourceBundle resource = null;
 
-	/**
-	 * Loads a resource bundle for the given locale.
-	 * 
-	 * @param locale
-	 * @return ResourceBundle
-	 */
-	private static ResourceBundle loadResourceBundle(Locale locale) throws MissingResourceException
-	{
-		ResourceBundle newBundle = null;
-		String resourceName = PJX_RESOURCE_PREFIX + "_" + locale.getLanguage() + ".properties";
-		
-		// first we try to find one in the current working directory
-		try 
-		{
-			File file = new File(resDir + File.separator + resourceName);
-			if (file.exists() && file.canRead())
-			{
-				newBundle = new PropertyResourceBundle(new FileInputStream(file));
-				return newBundle;
-			}
-		} 
-		catch (Exception e) 
-		{
-			// shit happens, go on and try to find one in our jar file
-		}
-		
-		try 
-		{
-			URL url = Resource.class.getClassLoader().getResource(resourceName);
-			newBundle = new PropertyResourceBundle(url.openStream());
-		} 
-		catch (Exception e) 
-		{
-			throw new MissingResourceException("couldn't find " + resourceName, Resource.class.getName(), resourceName);
-		}
-		
-		return newBundle;
-	}
-	
-	static{
-		// the default resource must be available
-		defaultResource = loadResourceBundle(Locale.ENGLISH);
-		try 
-		{
-			// now try to load the resource bundle form the users locale
-			resource = loadResourceBundle(Locale.getDefault());
-		} catch (MissingResourceException e) {
-			// our fallback is english
-			resource = defaultResource;
-		}
-	}
-		
 	/**
 	 * Constructor of Resource.
 	 */
@@ -147,10 +94,10 @@ public class Resource {
 		locale = new Locale(lang, "");
 
 		try {
-			resource = loadResourceBundle(locale);
+            resource = ResourceBundle.getBundle(PJX_LANG_RESOURCE_NAME, locale);
 		} catch (MissingResourceException e) {
-			// our fallback is english
-			resource = defaultResource;
+            System.out.println("Unable to load language resources");
+			throw e;
 		}
 
 		// initialize languages dependent keys
@@ -160,12 +107,12 @@ public class Resource {
 	/**
 	 *
 	 */
-	public static String getChosenLanguage()
+	public static Locale getChosenLanguage()
 	{
 		if (locale == null)
 			return null;
 
-		return locale.getLanguage();
+		return locale;
 	}
 
 	/**
@@ -198,15 +145,7 @@ public class Resource {
 		} 
 		catch (MissingResourceException e) 
 		{
-			try 
-			{
-				// fallback to defaultResource
-				text = defaultResource.getString(key);
-			} 
-			catch (MissingResourceException e2) 
-			{
 				System.out.println("ResourceKey '" + key + "' not found in pjxresources");
-			}
 		}
 		
 		// use key as text as fallback
@@ -251,7 +190,7 @@ public class Resource {
 	 * Gets a String from the resource and inserts an optional argument.
 	 * 
 	 * @param key
-	 * @param args
+	 * @param arg
 	 * @return
 	 */
 	public static String getString(String key, Object arg)
@@ -321,117 +260,30 @@ public class Resource {
 	/**
 	 * Returns the available Locales for pjxresources.
 	 * 
-	 * @return Locale[]
+	 * @return Set of all available locales
 	 */
-	public static Locale[] getAvailableLocales() {
-		Set locales = new HashSet();
-		String defLang = Locale.getDefault().getLanguage();
+    public static Set<Locale> getAvailableLocales() {
+        Set<Locale> locales = new HashSet<Locale>();
 
-		try {
-			// we know we have an english resource, so first find this one to find the location
-			URL url = ClassLoader.getSystemResource(PJX_RESOURCE_DIR_NAME + File.separator + PJX_RESOURCE_PREFIX + "_en.properties");
-			if (url != null) {
-				URLConnection urlc = null;
-				urlc = url.openConnection();
-				
-				// If the resources are located in a JAR file, we need this
-				// version to get the available locales.
-				if (urlc != null && urlc instanceof JarURLConnection) {
-					JarURLConnection jurlc = (JarURLConnection) urlc;
-					addAvailableLocalesFromJar(locales, jurlc);
-				}
-				// .. else if the resources are in the file system, we use the
-				// default version to get the available locales.
-				else {
-					File enFile = new File(url.getFile());
-					File dir = enFile.getParentFile();
-					addAvailableLocalesFromFileSystem(locales, dir);
-				}
-			} else {
-				System.err.println("Couldn't find \"" + PJX_RESOURCE_PREFIX
-						+ "\"*.properties");
-			}
-			
-			// also look into the current resouce directory for additional resource files
-			File resourceDir = new File(resDir);
-			addAvailableLocalesFromFileSystem(locales, resourceDir);
-		} catch (Exception e) {
-            e.printStackTrace();
-		}
-		
-		return (Locale[])locales.toArray(new Locale[0]);
+        for (Locale locale : DateFormat.getAvailableLocales()) {
+            try {
+                // Check if we have actually got target locale, not fallback
+                if (!locale.toString().equals("") && ResourceBundle.getBundle(PJX_LANG_RESOURCE_NAME, locale).
+                        getLocale() == locale) {
+                    locales.add(locale);
+                }
+            } catch (MissingResourceException e) {
+                // Means that resource for the language is not available,
+                // which is OK as we are checking list of available languages
+            }
+        }
+
+        // Clear all cached bundles from memory
+        ResourceBundle.clearCache();
+
+		return locales;
 	}
 	
-	/**
-	 * Adds available Locales from the file system.
-	 * 
-	 * @param locales
-	 * @param dir
-	 */
-	private static void addAvailableLocalesFromFileSystem(Set locales, File dir) {
-		File[] files = dir.listFiles();
-		if (files != null) {
-			for (int i = 0; i < files.length; i++) {
-				File file = files[i];
-				if (file.isFile() && file.getName().startsWith(PJX_RESOURCE_PREFIX))
-				{
-					try {
-						String code = file.getName();
-						int pos = code.indexOf('_');
-						if (pos != -1) {
-							code = code.substring(pos + 1);
-						}
-						pos = code.indexOf('.');
-						if (pos != -1)
-						{
-							code = code.substring(0, pos);
-						}
-						Locale locale = new Locale(code, "");
-						locales.add(locale);
-					} catch (Exception e) {
-						e.printStackTrace();
-					}
-				}
-			}
-		}
-	}
-
-	/**
-	 * Adds available Locales from a Jar file location
-	 * 
-	 * @param locales
-	 * @param jurlc
-	 */
-	private static void addAvailableLocalesFromJar(Set locales, JarURLConnection jurlc) {
-		JarFile jarf = null;
-		try {
-			jarf = jurlc.getJarFile();
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
-		if (jarf != null) {
-			for (Enumeration en = jarf.entries(); en.hasMoreElements();) {
-				JarEntry jare = (JarEntry) en.nextElement();
-				String name = jare.getName();
-				if (name.startsWith(PJX_RESOURCE_PREFIX)) {
-					String code = name.substring(0,
-							name.length() - ".properties".length());
-					int pos = code.indexOf('_');
-					if (pos != -1) {
-						code = code.substring(pos + 1);
-					}
-					pos = code.indexOf('.');
-					if (pos != -1)
-					{
-						code = code.substring(0, pos);
-					}
-					Locale locale = new Locale(code, "");
-					locales.add(locale);
-				}
-			}
-		}
-	}
-
 	/**
 	 * Returns a resource (e.g. from the jar file) as an URL.
 	 * 
@@ -458,7 +310,7 @@ public class Resource {
 		// this is only necessary on windows systems and doesn't harm others
 		resource = resource.replace('\\', '/');
 		
-		// ok, not founde in the filesystem, now try the classloader
+		// ok, not found in the filesystem, now try the classloader
 		return Resource.class.getClassLoader().getResource(resource);
 	}
 

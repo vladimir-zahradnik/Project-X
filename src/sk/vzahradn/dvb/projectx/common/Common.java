@@ -220,7 +220,7 @@ public final class Common extends Object {
 	 */
 	public static void saveSettings(String str)
 	{
-		getSettings().setProperty(Keys.KEY_Language[0], Resource.getChosenLanguage());
+		getSettings().setProperty(Keys.KEY_Language[0], Resource.getChosenLanguage().getLanguage());
 
 		getMainFrameBounds();
 
@@ -1437,7 +1437,7 @@ public final class Common extends Object {
 		}
 
 		list.add(Resource.getString("javaev.java.disk.access") + "\t" + str);
-		list.add(Resource.getString("javaev.java.user.lang") + "\t" + Resource.getChosenLanguage());
+		list.add(Resource.getString("javaev.java.user.lang") + "\t" + Resource.getChosenLanguage().getLanguage());
 		list.add(Resource.getString("javaev.java.user.name") + "\t" + System.getProperty("user.name"));
 		list.add(Resource.getString("javaev.java.user.home") + "\t" + System.getProperty("user.home"));
 

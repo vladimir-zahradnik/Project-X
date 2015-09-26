@@ -182,9 +182,9 @@ public class Start extends Object {
 			 */
 			Resource.loadLang(Common.getSettings().getProperty(Keys.KEY_Language));
 
-			Common.getSettings().setProperty(Keys.KEY_Language[0], Resource.getChosenLanguage());
+			Common.getSettings().setProperty(Keys.KEY_Language[0], Resource.getChosenLanguage().getLanguage());
 
-			System.out.println("Loading Language -> '" + Resource.getChosenLanguage() + "'");
+			System.out.println("Loading Language -> '" + Resource.getChosenLanguage().getLanguage() + "'");
 
 			/**
 			 * dont save settings on exit on CLI, see cli-switches

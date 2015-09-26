@@ -57,13 +57,8 @@ import java.io.IOException;
 import java.io.PrintWriter;
 import java.io.StringWriter;
 
-import java.util.Date;
-import java.util.List;
+import java.util.*;
 import java.text.DateFormat;
-import java.util.ArrayList;
-import java.util.Locale;
-
-import java.util.Collections;
 
 import javax.swing.BorderFactory;
 import javax.swing.Box;
@@ -1418,18 +1413,21 @@ public class MainFrame extends JPanel {
 
         langMenu.addSeparator();
 
-        Locale[] locales = Resource.getAvailableLocales();
+        Locale uiLocale = Resource.getChosenLanguage();
+        JRadioButtonMenuItem menuItem = null;
+        Set<Locale> locales = Resource.getAvailableLocales();
 
-        for (int i = 0; i < locales.length; i++) {
-            Locale item = locales[i];
+        for (Locale locale : locales) {
+            if (uiLocale != null) {
+                menuItem = new JRadioButtonMenuItem(locale.getDisplayLanguage(uiLocale));
+                menuItem.setSelected(locale.equals(uiLocale));
+            } else {
+                menuItem = new JRadioButtonMenuItem(locale.getDisplayLanguage());
+            }
 
-            JRadioButtonMenuItem menuItem = new JRadioButtonMenuItem(item.getLanguage());
             menuItem.addActionListener(listener);
 
-            if (Resource.getChosenLanguage() != null)
-                menuItem.setSelected(item.getLanguage().equals(Resource.getChosenLanguage()));
-
-            menuItem.setActionCommand(item.getLanguage());
+            menuItem.setActionCommand(locale.getLanguage());
             langMenu.add(menuItem);
             group.add(menuItem);
         }
