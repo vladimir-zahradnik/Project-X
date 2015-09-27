@@ -1372,12 +1372,6 @@ public class MainFrame extends JPanel {
             public void actionPerformed(ActionEvent event) {
                 String action = event.getActionCommand();
 
-                //TODO: Resource is no longer valid, consider removing this from code
-                if (action.equals("check")) {
-                    new Html("http://project-x.sourceforge.net/optional/resources/").show();
-                    return;
-                }
-
                 if (action.equals("system"))
                     Resource.setChosenLanguage(null);
 
@@ -1391,14 +1385,6 @@ public class MainFrame extends JPanel {
 
         JMenu langMenu = new JMenu();
         CommonGui.localize(langMenu, "language.menu");
-
-        JMenuItem item_check = new JMenuItem();
-        CommonGui.localize(item_check, "language.check");
-        item_check.addActionListener(listener);
-        item_check.setActionCommand("check");
-        langMenu.add(item_check);
-
-        langMenu.addSeparator();
 
         ButtonGroup group = new ButtonGroup();
 

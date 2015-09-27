@@ -220,7 +220,8 @@ public final class Common extends Object {
 	 */
 	public static void saveSettings(String str)
 	{
-		getSettings().setProperty(Keys.KEY_Language[0], Resource.getChosenLanguage().getLanguage());
+		getSettings().setProperty(Keys.KEY_Language[0],
+				null == Resource.getChosenLanguage() ? null : Resource.getChosenLanguage().getLanguage());
 
 		getMainFrameBounds();
 
