@@ -1401,7 +1401,7 @@ public class MainFrame extends JPanel {
 
         Locale uiLocale = Resource.getChosenLanguage();
         JRadioButtonMenuItem menuItem = null;
-        Set<Locale> locales = Resource.getAvailableLocales();
+        SortedSet<Locale> locales = Resource.getAvailableLocales();
 
         for (Locale locale : locales) {
             if (uiLocale != null) {

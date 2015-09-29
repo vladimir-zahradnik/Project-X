@@ -30,14 +30,7 @@ import java.io.File;
 import java.net.URL;
 import java.text.DateFormat;
 import java.text.MessageFormat;
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Locale;
-import java.util.MissingResourceException;
-import java.util.ResourceBundle;
-import java.util.Set;
-import java.util.StringTokenizer;
+import java.util.*;
 
 import java.awt.Image;
 import java.awt.Toolkit;
@@ -118,8 +111,8 @@ public class Resource {
      * Gets a String from the Resource file. If the key is not found, the key
      * itself is returned as text.
      *
-     * @param key
-     * @return String
+     * @param key Key in ResourceBundle, which we want to get.
+     * @return Localized value from ResourceBundle matching the key, returned as a String.
      */
     public static String getString(String key) {
         String text = null;
@@ -150,93 +143,44 @@ public class Resource {
             lines.add(st.nextToken());
         }
 
-        return (String []) lines.toArray();
+        return lines.toArray(new String[lines.size()]);
     }
 
     /**
      * Gets a String from the resource and inserts optional arguments.
+     * This method is just an alias for MessageFormat.format(), passing all its arguments.
      *
-     * @param key
-     * @param args
-     * @return
+     * @param key Key from ResourceBundle.
+     * @param args Optional arguments.
+     * @return Requested string with optional arguments.
      */
-    public static String getString(String key, Object args[]) {
+    public static String getString(String key, Object... args) {
         return MessageFormat.format(getString(key), args);
     }
-
-    /**
-     * Gets a String from the resource and inserts an optional argument.
-     *
-     * @param key
-     * @param arg
-     * @return
-     */
-    public static String getString(String key, Object arg) {
-        return MessageFormat.format(getString(key), arg);
-    }
-
-    /**
-     * Gets a String from the resource and inserts two optional arguments.
-     *
-     * @param key
-     * @param arg1
-     * @param arg2
-     * @return
-     */
-    public static String getString(String key, Object arg1, Object arg2) {
-        return MessageFormat.format(getString(key), arg1, arg2);
-    }
-
-    /**
-     * Gets a String from the resource and inserts three optional arguments.
-     *
-     * @param key
-     * @param arg1
-     * @param arg2
-     * @param arg3
-     * @return
-     */
-    public static String getString(String key, Object arg1, Object arg2, Object arg3) {
-        return MessageFormat.format(getString(key), arg1, arg2, arg3);
-    }
-
-    /**
-     * Gets a String from the resource and inserts four optional arguments.
-     *
-     * @param key
-     * @param arg1
-     * @param arg2
-     * @param arg3
-     * @param arg4
-     * @return
-     */
-    public static String getString(String key, Object arg1, Object arg2, Object arg3, Object arg4) {
-        return MessageFormat.format(getString(key), arg1, arg2, arg3, arg4);
-    }
-
-    /**
-     * Gets a String from the resource and inserts five optional arguments.
-     *
-     * @param key
-     * @param arg1
-     * @param arg2
-     * @param arg3
-     * @param arg4
-     * @param arg5
-     * @return
-     */
-    public static String getString(String key, Object arg1, Object arg2, Object arg3, Object arg4, Object arg5) {
-        return MessageFormat.format(getString(key), arg1, arg2, arg3, arg4, arg5);
-    }
-
 
     /**
      * Returns the available Locales for pjxresources.
      *
      * @return Set of all available locales
      */
-    public static Set<Locale> getAvailableLocales() {
-        Set<Locale> locales = new HashSet<>();
+    public static SortedSet<Locale> getAvailableLocales() {
+
+        // Sort available locales alphabetically in ascending order based on language name.
+        // Order is dependant on interface language.
+        Comparator<Locale> comparator = new Comparator<Locale>() {
+            @Override
+            public int compare(Locale lang1, Locale lang2) {
+                Locale uiLocale = getChosenLanguage();
+
+                if (uiLocale != null) {
+                    return lang1.getDisplayLanguage(uiLocale).compareTo(lang2.getDisplayLanguage(uiLocale));
+                } else {
+                    return lang1.getDisplayLanguage().compareTo(lang2.getDisplayLanguage());
+                }
+            }
+        };
+
+        SortedSet<Locale> locales = new TreeSet<Locale>(comparator);
 
         for (Locale locale : DateFormat.getAvailableLocales()) {
             try {
