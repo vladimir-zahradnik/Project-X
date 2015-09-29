@@ -180,7 +180,7 @@ public class Resource {
             }
         };
 
-        SortedSet<Locale> locales = new TreeSet<Locale>(comparator);
+        SortedSet<Locale> locales = new TreeSet<>(comparator);
 
         for (Locale locale : DateFormat.getAvailableLocales()) {
             try {
