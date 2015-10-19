@@ -371,7 +371,7 @@ public class FileProperties extends JFrame {
 		else
 			scanFile();
 
-		show();
+		setVisible(true);
 	}
 
 	/**

@@ -201,12 +201,21 @@ public class JobCollection extends Object {
 	}
 
 	/**
-	 *
+	 * Add input files from array of objects.
+	 * @param input
+	 * @deprecated use {@link #addInputFile(List)} instead.
 	 */
+	@Deprecated
 	public void addInputFile(Object[] input)
 	{
 		for (int i = 0; i < input.length; i++) 
 			addInputFile(input[i]);
+	}
+
+	public void addInputFile(List<Object> input) {
+		for (Object item : input) {
+			addInputFile(item);
+		}
 	}
 
 	/**

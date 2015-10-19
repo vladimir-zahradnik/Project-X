@@ -81,7 +81,6 @@ import javax.swing.JScrollPane;
 import javax.swing.JTabbedPane;
 import javax.swing.JTextField;
 import javax.swing.JTextArea;
-import javax.swing.JViewport;
 import javax.swing.SwingUtilities;
 import javax.swing.SwingConstants;
 import javax.swing.UIManager;
@@ -118,16 +117,15 @@ import java.awt.datatransfer.StringSelection;
 import java.awt.datatransfer.ClipboardOwner;
 
 import java.io.FilenameFilter;
-//import org.apache.oro.io.RegexFilenameFilter;
 
 /**
  *
  */
 public class MainFrame extends JPanel {
 
-    private static String frametitle = "";
+    private static String frameTitle = "";
 
-    private static int GlobalReturnCode = 0;
+    private static final int GlobalReturnCode = 0;
 
     private static boolean SilentAction = true;
 
@@ -152,7 +150,6 @@ public class MainFrame extends JPanel {
 
     private JList list1;
 
-    private JViewport viewport;
     private JTextField outfield;
     private JPopupMenu popup;
     private JFrame autoload;
@@ -161,7 +158,7 @@ public class MainFrame extends JPanel {
 
     private int loadSizeForward = 1024000;
 
-    private sk.vzahradn.dvb.projectx.video.Preview Preview = new Preview(loadSizeForward);
+    private Preview Preview = new Preview(loadSizeForward);
 
     private static GOPEditor gop_editor;
 
@@ -287,13 +284,11 @@ public class MainFrame extends JPanel {
                     }
                 } else if (dropaction == 2)    // move = one coll
                 {
-                    Object[] val = list.toArray();
-
-                    if (val.length > 0) {
+                    if (list.size() > 0) {
                         Common.addCollection(false);
 
                         JobCollection collection = Common.getCollection(comboBox_0.getSelectedIndex());
-                        collection.addInputFile(val);
+                        collection.addInputFile(list);
 
                         if (eyetvCollectionName != null)
                             collection.setOutputName(eyetvCollectionName);
@@ -1470,7 +1465,7 @@ public class MainFrame extends JPanel {
         CommonGui.localize(openHtml, "help.help");
         openHtml.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
-                new Html().show();
+                new Html().setVisible(true);
             }
         });
         openHtml.setAccelerator(KeyStroke.getKeyStroke("F1"));
@@ -1658,7 +1653,7 @@ public class MainFrame extends JPanel {
         open_autoload.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
                 autoload.setState(0);
-                autoload.show();
+                autoload.setVisible(true);
             }
         });
         panel_1.add(open_autoload);
@@ -2069,7 +2064,7 @@ public class MainFrame extends JPanel {
                 FtpChooser ftpChooser = new FtpChooser();
 
                 ftpChooser.pack();
-                ftpChooser.show();
+                ftpChooser.setVisible(true);
 
                 XInputDirectory xInputDirectory = ftpChooser.getXInputDirectory();
 
@@ -2118,20 +2113,21 @@ public class MainFrame extends JPanel {
         add_coll_and_1file.setToolTipText(Resource.getString("autoload.add.coll.tip"));
         add_coll_and_1file.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
-                Object[] val = list1.getSelectedValues();
+                List<Object> items = list1.getSelectedValuesList();
 
                 /**
                  * create new collection for each file
                  */
-                for (int i = 0; i < val.length; i++) {
+
+                for (Object item : items) {
                     JobCollection collection = Common.addCollection();
 
-                    collection.addInputFile(val[i]);
+                    collection.addInputFile(item);
 
                     updateCollectionTable(collection.getCollectionAsTable());
                 }
 
-                if (val.length > 0)
+                if (items.size() > 0)
                     updateCollectionPanel(Common.getActiveCollection());
 
                 autoload.toFront();
@@ -2148,9 +2144,9 @@ public class MainFrame extends JPanel {
         add_coll_and_files.setToolTipText(Resource.getString("autoload.add.coll2.tip"));
         add_coll_and_files.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
-                Object[] val = list1.getSelectedValues();
+                List<Object> items = list1.getSelectedValuesList();
 
-                if (val.length == 0)
+                if (items.size() == 0)
                     return;
 
                 /**
@@ -2158,7 +2154,7 @@ public class MainFrame extends JPanel {
                  */
                 JobCollection collection = Common.addCollection();
 
-                collection.addInputFile(val);
+                collection.addInputFile(items);
 
                 updateCollectionTable(collection.getCollectionAsTable());
                 updateCollectionPanel(Common.getActiveCollection());
@@ -2177,14 +2173,14 @@ public class MainFrame extends JPanel {
         add_files.setToolTipText(Resource.getString("autoload.add.file.tip"));
         add_files.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
-                Object[] val = list1.getSelectedValues();
+                List<Object> items = list1.getSelectedValuesList();
 
-                if (val.length > 0) // one or more files
+                if (items.size() > 0) // one or more files
                 {
                     Common.addCollection(false);
 
                     JobCollection collection = Common.getCollection(comboBox_0.getSelectedIndex());
-                    collection.addInputFile(val);
+                    collection.addInputFile(items);
 
                     updateCollectionTable(collection.getCollectionAsTable());
                     updateCollectionPanel(Common.getActiveCollection());
@@ -2214,7 +2210,7 @@ public class MainFrame extends JPanel {
 
 
         // in list
-        list1 = new JList(new Object[0]);
+        list1 = new JList<>(new Object[0]);
         list1.setName("inl");
         list1.setVisibleRowCount(8);
         list1.setSelectionMode(2);
@@ -2238,12 +2234,12 @@ public class MainFrame extends JPanel {
                     {
                         Common.addCollection(false);
 
-                        Object[] val = list1.getSelectedValues();
+                        List<Object> items = list1.getSelectedValuesList();
 
-                        if (val.length > 0) // one or more files
+                        if (items.size() > 0) // one or more files
                         {
                             JobCollection collection = Common.getCollection(comboBox_0.getSelectedIndex());
-                            collection.addInputFile(val);
+                            collection.addInputFile(items);
 
                             updateCollectionTable(collection.getCollectionAsTable());
                             updateCollectionPanel(Common.getActiveCollection());
@@ -2263,9 +2259,9 @@ public class MainFrame extends JPanel {
                 if (e.getKeyChar() == KeyEvent.VK_ENTER) {
                     Common.addCollection(false);
 
-                    Object[] val = list1.getSelectedValues();
+                    List<Object> val = list1.getSelectedValuesList();
 
-                    if (val.length > 0) // one or more files
+                    if (val.size() > 0) // one or more files
                     {
                         JobCollection collection = Common.getCollection(comboBox_0.getSelectedIndex());
                         collection.addInputFile(val);
@@ -2907,7 +2903,7 @@ public class MainFrame extends JPanel {
             frame.setLocation(Common.getSettings().getIntProperty(Keys.KEY_WindowPositionMain_X), Common.getSettings().getIntProperty(Keys.KEY_WindowPositionMain_Y));
             frame.setSize(new Dimension(Common.getSettings().getIntProperty(Keys.KEY_WindowPositionMain_Width), Common.getSettings().getIntProperty(Keys.KEY_WindowPositionMain_Height)));
 
-            setFrameTitle(frametitle = version[0] + "/" + version[1] + " " + version[2] + " " + version[3]);
+            setFrameTitle(frameTitle = version[0] + "/" + version[1] + " " + version[2] + " " + version[3]);
 
             showStartUpProgress(startup, 90, "Printing Environment Settings...");
 
@@ -3009,7 +3005,7 @@ public class MainFrame extends JPanel {
      *
      */
     public static void resetFrameTitle() {
-        setFrameTitle(frametitle);
+        setFrameTitle(frameTitle);
     }
 
     /**
